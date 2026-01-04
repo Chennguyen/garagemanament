@@ -18,7 +18,7 @@ public class Customer {
     String id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id")
     Account account;
 
     String fullName;
