@@ -100,7 +100,7 @@ public class AuthenticationService {
                 .jwtID(UUID.randomUUID().toString())
                 // Thêm Account ID (UUID) vào claim để tiện trace
                 .claim("accountId", account.getId())
-                // Scope lấy từ Enum Role
+                // Scope lấy từ  Role
                 .claim("scope", buildScope(account))
                 .build();
 
@@ -118,7 +118,7 @@ public class AuthenticationService {
 
     private String buildScope(Account account) {
         if (account.getRole() == null) return "";
-        return account.getRole().name(); // Trả về "CUSTOMER", "STAFF_ADMIN"...
+        return account.getRole().getName(); // VD: "ROLE_ADMIN"
     }
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {

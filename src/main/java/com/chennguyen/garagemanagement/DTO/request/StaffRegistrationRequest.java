@@ -1,7 +1,6 @@
 package com.chennguyen.garagemanagement.DTO.request;
 
 import com.chennguyen.garagemanagement.emuns.EmployeeType;
-import com.chennguyen.garagemanagement.emuns.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,24 +14,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffRegistrationRequest {
-    // Thông tin bắt buộc cũ
-    String facilityCode;
-    String fullName;
-    String phoneNumber;
-    String password;
-    Role role;
+
+    String facilityCode; // VD: "01"
 
     // Thông tin cá nhân
-    LocalDate dob;
-    String gender;
+    String fullName;
+    String phoneNumber;
     String address;
-    String avatar;
-    String bio;
+    String gender;
+    LocalDate dob;
 
-    // Thông tin HR (Mới thêm)
-    String jobTitle;
+    // Thông tin công việc (HR)
+    String role;       // VD: "ROLE_MECHANIC" (Chọn từ dropdown)
+    String jobTitle;   // VD: "Thợ máy chính"
     BigDecimal salary;
-    LocalDate hireDate;
-    EmployeeType employeeType;
-    // Status thường mặc định là PROBATION hoặc ACTIVE khi tạo mới, không cần gửi từ FE
+    EmployeeType employeeType; // FULL_TIME, PART_TIME...
 }

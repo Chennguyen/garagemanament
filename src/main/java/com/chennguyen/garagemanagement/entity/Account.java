@@ -1,9 +1,10 @@
 package com.chennguyen.garagemanagement.entity;
 
-import com.chennguyen.garagemanagement.emuns.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Setter
 @Getter
@@ -26,10 +27,13 @@ public class Account {
     @Column(nullable = false)
     String password; // Mật khẩu (đã mã hóa)
 
-    @Enumerated(EnumType.STRING)
-    Role role;
-
-    // Trạng thái tài khoản (Active/Inactive)
+    // Trạng thái tài khoản
     @Builder.Default
     Boolean enabled = true;
+
+
+    // 👇 SỬA LẠI: Mỗi tài khoản chỉ gắn với 1 Role duy nhất
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    Role role;
 }
