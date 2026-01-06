@@ -1,6 +1,7 @@
 package com.chennguyen.garagemanagement.service;
 
 import com.chennguyen.garagemanagement.DTO.request.CustomerRegistrationRequest;
+import com.chennguyen.garagemanagement.DTO.request.CustomerUpdateRequest;
 import com.chennguyen.garagemanagement.DTO.response.CustomerResponse;
 import com.chennguyen.garagemanagement.entity.Account;
 import com.chennguyen.garagemanagement.entity.Customer;
@@ -13,9 +14,12 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
 
 
 @Slf4j
@@ -65,15 +69,69 @@ public class CustomerService {
         // 6. Save Customer (Cascade will save Account and account_roles table)
         Customer savedCustomer = customerRepository.save(customer);
 
-        // 7. Map to Response
-        CustomerResponse response = modelMapper.map(savedCustomer, CustomerResponse.class);
+        log.info("Customer registered successfully with ID: {}", savedCustomer.getId()); // 📝 Log thành công
+        return convertToResponse(savedCustomer);
+    }
 
-        // Map Role details to Response
-        if (savedCustomer.getAccount().getRole() != null) {
-            response.setRoleName(savedCustomer.getAccount().getRole().getName());
-            response.setRoleDescription(savedCustomer.getAccount().getRole().getDescription());
+    // ---  XEM PROFILE (CUSTOMER) ---
+    public CustomerResponse getMyProfile() {
+        Customer customer = getCurrentAuthenticatedCustomer();
+        return convertToResponse(customer);
+    }
+
+    @Transactional
+    public CustomerResponse updateCustomer(CustomerUpdateRequest request) {
+        // Lấy SĐT từ Token
+        Customer customer = getCurrentAuthenticatedCustomer();
+
+        // ⚠️ FIX QUAN TRỌNG: Check từng trường, nếu có gửi lên mới update
+        // Tránh việc modelMapper tự động set null đè lên dữ liệu cũ
+
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            customer.setFullName(request.getFullName());
         }
 
+        if (request.getAddress() != null && !request.getAddress().isBlank()) {
+            customer.setAddress(request.getAddress());
+        }
+
+        if (request.getGender() != null && !request.getGender().isBlank()) {
+            customer.setGender(request.getGender());
+        }
+
+        if (request.getDob() != null) {
+            customer.setDob(request.getDob());
+        }
+
+        Customer updatedCustomer = customerRepository.save(customer);
+
+        log.info("Profile updated successfully for ID: {}", updatedCustomer.getId()); // 📝 Log thành công
+        return convertToResponse(updatedCustomer);
+    }
+
+    // --- HELPER METHODS ---
+
+    private Customer getCurrentAuthenticatedCustomer() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String phoneNumber = authentication.getName();
+
+        return customerRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private CustomerResponse convertToResponse(Customer customer) {
+        CustomerResponse response = modelMapper.map(customer, CustomerResponse.class);
+
+        // Lấy Role từ Account lôi ra ngoài
+        if (customer.getAccount() != null && customer.getAccount().getRole() != null) {
+            response.setRoleName(customer.getAccount().getRole().getName());
+            response.setRoleDescription(customer.getAccount().getRole().getDescription());
+        }
         return response;
     }
 }

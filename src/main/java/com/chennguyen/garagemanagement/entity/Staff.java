@@ -41,6 +41,7 @@ public class Staff {
     String gender;
     String address;
     String bio; // Giới thiệu ngắn/Ghi chú
+    String avatar;
 
     // --- THÔNG TIN NHÂN SỰ (HR) ---
     String jobTitle; // Ví dụ: "Thợ máy chính", "Lễ tân"

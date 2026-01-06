@@ -1,4 +1,4 @@
-package com.chennguyen.garagemanagement.DTO.response;
+package com.chennguyen.garagemanagement.DTO.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,14 +11,11 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponse {
-    String id;
+public class StaffUpdateRequest {
     String fullName;
-    String email;
-    String phoneNumber;
-    String address;
-    String gender;
+    String address; // (Thay cho hometown để khớp Entity)
     LocalDate dob;
-    String roleName;
-    String roleDescription;
+    String gender;
+    String avatar;
+    String bio;
 }
