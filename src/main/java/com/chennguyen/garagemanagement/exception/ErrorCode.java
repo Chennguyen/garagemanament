@@ -21,7 +21,8 @@ public enum ErrorCode {
     INVALID_FACILITY_CODE(1009, "Facility Code must have exactly 2 characters", HttpStatus.BAD_REQUEST),
 
     UNAUTHENTICATED(1010, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1011, "You do not have permission", HttpStatus.FORBIDDEN);
+    UNAUTHORIZED(1011, "You do not have permission", HttpStatus.FORBIDDEN),
+    PAYSLIP_EXISTED(1012, "Payslip already exists for this period", HttpStatus.BAD_REQUEST);
 
     private int code;
     private String message;

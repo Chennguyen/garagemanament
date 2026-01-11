@@ -2,14 +2,17 @@ package com.chennguyen.garagemanagement.service;
 
 import com.chennguyen.garagemanagement.DTO.request.StaffRegistrationRequest;
 import com.chennguyen.garagemanagement.DTO.request.StaffUpdateRequest;
+import com.chennguyen.garagemanagement.DTO.response.SalaryHistoryResponse;
 import com.chennguyen.garagemanagement.DTO.response.StaffResponse;
 import com.chennguyen.garagemanagement.emuns.StaffStatus;
 import com.chennguyen.garagemanagement.entity.Account;
 import com.chennguyen.garagemanagement.entity.Role;
+import com.chennguyen.garagemanagement.entity.SalaryHistory;
 import com.chennguyen.garagemanagement.entity.Staff;
 import com.chennguyen.garagemanagement.exception.AppException;
 import com.chennguyen.garagemanagement.exception.ErrorCode;
 import com.chennguyen.garagemanagement.repository.RoleRepository;
+import com.chennguyen.garagemanagement.repository.SalaryHistoryRepository;
 import com.chennguyen.garagemanagement.repository.StaffRepository;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Setter
@@ -35,6 +39,7 @@ import java.time.LocalDate;
 public class StaffService {
     StaffRepository staffRepository;
     RoleRepository roleRepository;
+    SalaryHistoryRepository salaryHistoryRepository;
     ModelMapper modelMapper;
     PasswordEncoder passwordEncoder;
 
@@ -129,6 +134,38 @@ public class StaffService {
         log.info("Profile updated successfully for staff: {}", updatedStaff.getEmployeeCode());
 
         return convertToResponse(updatedStaff);
+    }
+
+    // --- 4. GET SALARY HISTORY (Own salary history) ---
+    public List<SalaryHistoryResponse> getMySalaryHistory() {
+        Staff staff = getCurrentAuthenticatedStaff();
+        return getSalaryHistoryByStaff(staff);
+    }
+
+    // --- 5. GET SALARY HISTORY BY STAFF ID (For Admin/Manager) ---
+    public List<SalaryHistoryResponse> getSalaryHistoryByStaffId(String staffId) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return getSalaryHistoryByStaff(staff);
+    }
+
+    // Helper method to get salary history
+    private List<SalaryHistoryResponse> getSalaryHistoryByStaff(Staff staff) {
+        List<SalaryHistory> historyList = salaryHistoryRepository.findByStaffOrderByChangedAtDesc(staff);
+        
+        return historyList.stream()
+                .map(history -> SalaryHistoryResponse.builder()
+                        .id(history.getId())
+                        .staffId(history.getStaff().getId())
+                        .employeeCode(history.getStaff().getEmployeeCode())
+                        .staffName(history.getStaff().getFullName())
+                        .oldSalary(history.getOldSalary())
+                        .newSalary(history.getNewSalary())
+                        .reason(history.getReason())
+                        .updatedBy(history.getUpdatedBy())
+                        .changedAt(history.getChangedAt())
+                        .build())
+                .toList();
     }
 
     // ==========================================================

@@ -3,6 +3,7 @@ package com.chennguyen.garagemanagement.controller;
 import com.chennguyen.garagemanagement.DTO.request.StaffRegistrationRequest;
 import com.chennguyen.garagemanagement.DTO.request.StaffUpdateRequest;
 import com.chennguyen.garagemanagement.DTO.response.ApiResponse;
+import com.chennguyen.garagemanagement.DTO.response.SalaryHistoryResponse;
 import com.chennguyen.garagemanagement.DTO.response.StaffResponse;
 import com.chennguyen.garagemanagement.service.StaffService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,24 @@ public class StaffController {
     public ApiResponse<StaffResponse> updateProfile(@RequestBody StaffUpdateRequest request) {
         return ApiResponse.<StaffResponse>builder()
                 .result(staffService.updateProfile(request))
+                .build();
+    }
+
+    // 👇 API Get Own Salary History (Cho nhân viên xem lịch sử lương của mình)
+    @GetMapping("/salary-history")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MECHANIC', 'CASHIER', 'SECURITY')")
+    public ApiResponse<java.util.List<SalaryHistoryResponse>> getMySalaryHistory() {
+        return ApiResponse.<java.util.List<SalaryHistoryResponse>>builder()
+                .result(staffService.getMySalaryHistory())
+                .build();
+    }
+
+    // 👇 API Get Salary History by Staff ID (Cho Admin/Manager xem lịch sử lương của nhân viên khác)
+    @GetMapping("/{staffId}/salary-history")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ApiResponse<java.util.List<SalaryHistoryResponse>> getSalaryHistoryByStaffId(@PathVariable String staffId) {
+        return ApiResponse.<java.util.List<SalaryHistoryResponse>>builder()
+                .result(staffService.getSalaryHistoryByStaffId(staffId))
                 .build();
     }
 }
