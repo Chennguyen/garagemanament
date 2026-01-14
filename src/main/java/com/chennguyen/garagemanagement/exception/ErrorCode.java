@@ -22,7 +22,13 @@ public enum ErrorCode {
 
     UNAUTHENTICATED(1010, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1011, "You do not have permission", HttpStatus.FORBIDDEN),
-    PAYSLIP_EXISTED(1012, "Payslip already exists for this period", HttpStatus.BAD_REQUEST);
+    PAYSLIP_EXISTED(1012, "Payslip already exists for this period", HttpStatus.BAD_REQUEST),
+    NO_SCHEDULE_TODAY(1030, "You do not have a work schedule today!", HttpStatus.BAD_REQUEST),
+    INVALID_ATTENDANCE_ACTION(1031, "Invalid action (Only CHECK_IN or CHECK_OUT accepted)", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_IN(1032, "You have already checked in!", HttpStatus.BAD_REQUEST),
+    NOT_CHECKED_IN(1033, "You have not checked in yet! Please check in first.", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_OUT(1034, "You have already completed your shift (Checked out)!", HttpStatus.BAD_REQUEST),
+            ;
 
     private int code;
     private String message;

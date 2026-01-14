@@ -3,43 +3,50 @@ package com.chennguyen.garagemanagement.DTO.response;
 import com.chennguyen.garagemanagement.emuns.PayslipStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PayslipResponse {
     String id;
-    String staffId;
-    String employeeCode;
     String staffName;
+    String employeeCode;
+    String jobTitle;
+    String bankName;
+    String bankAccountNumber;
+
     LocalDate salaryPeriod;
-    
-    // Income
+    PayslipStatus status;
+
     BigDecimal baseSalary;
+    BigDecimal hourlyRate;
+
+    // Chấm công
+    Double actualWorkDays;
+    Double totalHoursWorked; // Mới thêm
+    Double otNormalHours;
+    Double otWeekendHours;
+    Double otHolidayHours;
+    Double nightWorkHours;
+
+    // Thu nhập
     BigDecimal totalAllowances;
     BigDecimal totalBonuses;
-    Double totalHoursWorked;
-    BigDecimal grossSalary;
-    
-    // Deductions
-    BigDecimal socialInsurance;   // BHXH
-    BigDecimal healthInsurance;   // BHYT
-    BigDecimal unemploymentInsurance; // BHTN
-    BigDecimal unionFee;
-    BigDecimal totalDeductions;
+    BigDecimal grossSalary; // Tổng thu nhập (Đã bao gồm OT trong này)
+
+    // Khấu trừ
+    BigDecimal socialInsurance;
+    BigDecimal healthInsurance;
+    BigDecimal unemploymentInsurance;
+    BigDecimal taxAmount;
+    BigDecimal fineAmount;
     BigDecimal totalAdvances;
-    
-    // Net
+    BigDecimal totalDeductions;
+
+    // Thực nhận
     BigDecimal netSalary;
-    
-    // Status
-    PayslipStatus status;
-    LocalDateTime createdAt;
 }

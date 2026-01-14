@@ -1,5 +1,6 @@
 package com.chennguyen.garagemanagement.repository;
 
+import com.chennguyen.garagemanagement.entity.Account;
 import com.chennguyen.garagemanagement.entity.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,6 @@ public interface StaffRepository extends JpaRepository<Staff, String> {
     Integer findMaxIdByFacility(@Param("facilityCode") String facilityCode);
 
     Optional<Staff> findByEmployeeCode(String employeeCode);
+
+    Optional<Staff> findByAccount(Account account);
 }

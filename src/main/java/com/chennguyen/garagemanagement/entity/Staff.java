@@ -63,4 +63,7 @@ public class Staff {
     @Column(nullable = false, columnDefinition = "float default 0.0")
     Double annualLeaveBalance = 0.0; // Số ngày phép còn lại
 
+    // 👇 MỚI: Thông tin ngân hàng
+    String bankName;          // VD: MB Bank, Vietcombank
+    String bankAccountNumber; // VD: 999999999
 }

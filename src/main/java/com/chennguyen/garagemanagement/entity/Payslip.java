@@ -38,8 +38,27 @@ public class Payslip {
     @Column(nullable = false)
     LocalDate salaryPeriod;
 
+    // --- SNAPSHOT (LƯU VẾT) ---
+    BigDecimal baseSalary;
+    Double salaryCoefficient;
+    BigDecimal hourlyRate;
+
+    // 👇 MỚI: Snapshot Bank để xuất file lương
+    String bankName;
+    String bankAccountNumber;
+
+    // --- CHẤM CÔNG (TIMEKEEPING) ---
+    Double standardWorkDays;
+    Double actualWorkDays;
+    Double otNormalHours;
+    Double otWeekendHours;
+    Double otHolidayHours;
+
+    // 👇 MỚI: Giờ làm đêm
+    Double nightWorkHours;
+    Double holidayNightWorkHours;
+
     // --- THU NHẬP (INCOME) ---
-    BigDecimal baseSalary;        // Lương cơ bản (theo hợp đồng)
     BigDecimal totalAllowances;   // Tổng phụ cấp
     BigDecimal totalBonuses;      // Tổng thưởng
     Double totalHoursWorked;      // Tổng giờ làm (đối với Part-time)
@@ -52,20 +71,21 @@ public class Payslip {
     BigDecimal healthInsurance;   // BHYT (1.5%)
     BigDecimal unemploymentInsurance; // BHTN (1%)
     BigDecimal unionFee;          // Phí công đoàn (50k)
+    // 👇 MỚI: Phạt & Thuế
+    BigDecimal fineAmount;
+    BigDecimal taxAmount;
+    BigDecimal totalAdvances;
 
     @Column(nullable = false)
     BigDecimal totalDeductions;   // Tổng khấu trừ
 
-    // --- THỰC NHẬN (NET) ---
+    // --- THỰC LĨNH ---
     @Column(nullable = false)
-    BigDecimal netSalary;         // Tiền thực nhận về túi
+    BigDecimal netSalary;
 
-    // --- TRẠNG THÁI ---
     @Enumerated(EnumType.STRING)
     PayslipStatus status;
-
+    String note;
     @CreationTimestamp
-    LocalDateTime createdAt;      // Ngày chốt lương
-
-    BigDecimal totalAdvances; // Tổng tiền đã ứng trong tháng
+    LocalDateTime createdAt;
 }
