@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/api/customers")
 @RequiredArgsConstructor
 @Tag(name = "Customer Controller", description = "Quản lý thông tin Khách hàng (Đăng ký, Xem/Sửa profile)")
 public class CustomerController {

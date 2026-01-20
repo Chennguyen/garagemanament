@@ -1,15 +1,22 @@
 package com.chennguyen.garagemanagement.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@OpenAPIDefinition(
+        info = @Info(title = "Garage Management API", version = "v1.0"),
+        security = @SecurityRequirement(name = "bearerAuth") // 👈 Sửa thành bearerAuth
+)
 @SecurityScheme(
-        name = "api", // Tên của scheme (sẽ hiện trong nút Authorize)
-        type = SecuritySchemeType.HTTP, // Loại bảo mật là HTTP
-        bearerFormat = "JWT",           // Định dạng token là JWT
-        scheme = "bearer"               // Tiền tố là "Bearer " (Bắt buộc cho JWT)
+        name = "bearerAuth",            // 👈 Sửa thành bearerAuth (cho khớp với Controller)
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
 )
 public class OpenApiConfig {
     // Không cần nội dung, chỉ cần chú thích

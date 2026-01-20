@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Authentication Controller", description = "Quản lý luồng xác thực: Đăng nhập, Đăng xuất, Refresh Token, Kiểm tra Token")
