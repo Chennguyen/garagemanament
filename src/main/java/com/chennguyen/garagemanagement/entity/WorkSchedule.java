@@ -44,6 +44,8 @@ public class WorkSchedule {
     String note; // Ghi chú công việc (Task Assignment)
 
     boolean isPublished; // Đã chốt lịch/Công khai chưa
+    
+    boolean isHoliday; // Cờ đánh dấu ngày Lễ/Tết để quét tính lương x3
 
     @CreationTimestamp
     LocalDateTime createdAt;

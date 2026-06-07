@@ -66,4 +66,10 @@ public class Staff {
     // 👇 MỚI: Thông tin ngân hàng
     String bankName;          // VD: MB Bank, Vietcombank
     String bankAccountNumber; // VD: 999999999
+
+    // --- THÔNG TIN TỔ CHỨC ---
+    String companyName; // VD: Maxim's Group
+    String costCenter;  // VD: 04211-VN Kumho
+    String payGroup;    // VD: VN-All
+    Integer paymentDate; // Ngày nhận lương (VD: 5, 15)
 }

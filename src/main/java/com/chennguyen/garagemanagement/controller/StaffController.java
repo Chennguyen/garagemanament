@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class StaffController {
             description = "Chỉ dành cho ADMIN hoặc MANAGER. Dùng để tạo tài khoản cho nhân viên mới vào làm (Thợ, Thu ngân...).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ApiResponse<StaffResponse> registerStaff(@RequestBody StaffRegistrationRequest request) {
+    public ApiResponse<StaffResponse> registerStaff(@Valid @RequestBody StaffRegistrationRequest request) {
         return ApiResponse.<StaffResponse>builder()
                 .result(staffService.createStaff(request))
                 .build();
@@ -60,7 +61,7 @@ public class StaffController {
             description = "Nhân viên tự cập nhật thông tin cá nhân (SĐT, Địa chỉ...). Không được sửa Lương hay Chức vụ.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ApiResponse<StaffResponse> updateProfile(@RequestBody StaffUpdateRequest request) {
+    public ApiResponse<StaffResponse> updateProfile(@Valid @RequestBody StaffUpdateRequest request) {
         return ApiResponse.<StaffResponse>builder()
                 .result(staffService.updateProfile(request))
                 .build();

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -25,7 +26,7 @@ public class CustomerController {
             summary = "Đăng ký tài khoản Khách hàng",
             description = "API public cho khách vãng lai đăng ký tài khoản mới. Sau khi đăng ký thành công sẽ có thông tin để đăng nhập."
     )
-    public ApiResponse<CustomerResponse> register(@RequestBody CustomerRegistrationRequest request) {
+    public ApiResponse<CustomerResponse> register(@Valid @RequestBody CustomerRegistrationRequest request) {
         return ApiResponse.<CustomerResponse>builder()
                 .result(customerService.registerCustomer(request))
                 .build();
@@ -53,7 +54,7 @@ public class CustomerController {
             description = "Cho phép khách hàng tự sửa các thông tin cơ bản (Tên, Ngày sinh, Giới tính, Địa chỉ...).",
             security = @SecurityRequirement(name = "bearerAuth") // Icon ổ khóa trong Swagger
     )
-    public ApiResponse<CustomerResponse> updateMyProfile(@RequestBody CustomerUpdateRequest request) {
+    public ApiResponse<CustomerResponse> updateMyProfile(@Valid @RequestBody CustomerUpdateRequest request) {
         return ApiResponse.<CustomerResponse>builder()
                 .result(customerService.updateCustomer(request))
                 .build();

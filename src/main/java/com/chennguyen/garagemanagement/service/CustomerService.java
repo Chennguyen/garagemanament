@@ -91,6 +91,13 @@ public class CustomerService {
             customer.setFullName(request.getFullName());
         }
 
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            if (!request.getEmail().equals(customer.getEmail()) && customerRepository.existsByEmail(request.getEmail())) {
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
+            customer.setEmail(request.getEmail());
+        }
+
         if (request.getAddress() != null && !request.getAddress().isBlank()) {
             customer.setAddress(request.getAddress());
         }
