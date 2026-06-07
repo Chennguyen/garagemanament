@@ -20,18 +20,19 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/auth/login",
-            "/auth/introspect",
-            "/auth/logout",
-            "/auth/refresh",
-            "/auth/register", // 👈 Thêm vào phòng khi bạn cần API đăng ký
-            "/api/deposits/payos-webhook", // Giữ lại theo code cũ
-            "/api/auth/internal/**",
-            "/customers/register"
+            "/api/auth/login",
+            "/api/auth/introspect",
+            "/api/auth/logout",
+            "/api/auth/refresh",
+            "/api/auth/register", // Nếu có
+            "/api/customers/register", // 👈 Cái bro đang cần nhất đây
+            "/api/deposits/payos-webhook",
+            "/api/auth/internal/**" // Endpoint nội bộ
     };
 
     private static final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
+            "/v3/api-docs",
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/api/deposits/success",

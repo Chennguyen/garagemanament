@@ -41,6 +41,7 @@ public class Staff {
     String gender;
     String address;
     String bio; // Giới thiệu ngắn/Ghi chú
+    String avatar;
 
     // --- THÔNG TIN NHÂN SỰ (HR) ---
     String jobTitle; // Ví dụ: "Thợ máy chính", "Lễ tân"
@@ -62,4 +63,13 @@ public class Staff {
     @Column(nullable = false, columnDefinition = "float default 0.0")
     Double annualLeaveBalance = 0.0; // Số ngày phép còn lại
 
+    // 👇 MỚI: Thông tin ngân hàng
+    String bankName;          // VD: MB Bank, Vietcombank
+    String bankAccountNumber; // VD: 999999999
+
+    // --- THÔNG TIN TỔ CHỨC ---
+    String companyName; // VD: Maxim's Group
+    String costCenter;  // VD: 04211-VN Kumho
+    String payGroup;    // VD: VN-All
+    Integer paymentDate; // Ngày nhận lương (VD: 5, 15)
 }

@@ -1,14 +1,18 @@
 package com.chennguyen.garagemanagement.service;
 
 import com.chennguyen.garagemanagement.DTO.request.StaffRegistrationRequest;
+import com.chennguyen.garagemanagement.DTO.request.StaffUpdateRequest;
+import com.chennguyen.garagemanagement.DTO.response.SalaryHistoryResponse;
 import com.chennguyen.garagemanagement.DTO.response.StaffResponse;
 import com.chennguyen.garagemanagement.emuns.StaffStatus;
 import com.chennguyen.garagemanagement.entity.Account;
 import com.chennguyen.garagemanagement.entity.Role;
+import com.chennguyen.garagemanagement.entity.SalaryHistory;
 import com.chennguyen.garagemanagement.entity.Staff;
 import com.chennguyen.garagemanagement.exception.AppException;
 import com.chennguyen.garagemanagement.exception.ErrorCode;
 import com.chennguyen.garagemanagement.repository.RoleRepository;
+import com.chennguyen.garagemanagement.repository.SalaryHistoryRepository;
 import com.chennguyen.garagemanagement.repository.StaffRepository;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,11 +21,13 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Setter
@@ -33,6 +39,7 @@ import java.time.LocalDate;
 public class StaffService {
     StaffRepository staffRepository;
     RoleRepository roleRepository;
+    SalaryHistoryRepository salaryHistoryRepository;
     ModelMapper modelMapper;
     PasswordEncoder passwordEncoder;
 
@@ -85,6 +92,111 @@ public class StaffService {
         if (savedStaff.getAccount().getRole() != null) {
             response.setRoleName(savedStaff.getAccount().getRole().getName());
             response.setRoleDescription(savedStaff.getAccount().getRole().getDescription());
+        }
+
+        return response;
+    }
+
+    // --- 2. XEM PROFILE (Dành cho Staff đang login) ---
+    public StaffResponse getMyProfile() {
+        Staff staff = getCurrentAuthenticatedStaff();
+        return convertToResponse(staff);
+    }
+
+    // --- 3. UPDATE PROFILE (Dành cho Staff đang login) ---
+    @Transactional
+    public StaffResponse updateProfile(StaffUpdateRequest request) {
+        Staff staff = getCurrentAuthenticatedStaff();
+
+        log.info("Updating profile for staff code: {}", staff.getEmployeeCode());
+
+        // Check từng trường để tránh ghi đè null (Manual Mapping)
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            staff.setFullName(request.getFullName().toUpperCase());
+        }
+        if (request.getAddress() != null && !request.getAddress().isBlank()) {
+            staff.setAddress(request.getAddress());
+        }
+        if (request.getGender() != null && !request.getGender().isBlank()) {
+            staff.setGender(request.getGender());
+        }
+        if (request.getDob() != null) {
+            staff.setDob(request.getDob());
+        }
+        if (request.getAvatar() != null && !request.getAvatar().isBlank()) {
+            staff.setAvatar(request.getAvatar());
+        }
+        if (request.getBio() != null && !request.getBio().isBlank()) {
+            staff.setBio(request.getBio());
+        }
+
+        Staff updatedStaff = staffRepository.save(staff);
+        log.info("Profile updated successfully for staff: {}", updatedStaff.getEmployeeCode());
+
+        return convertToResponse(updatedStaff);
+    }
+
+    // --- 4. GET SALARY HISTORY (Own salary history) ---
+    public List<SalaryHistoryResponse> getMySalaryHistory() {
+        Staff staff = getCurrentAuthenticatedStaff();
+        return getSalaryHistoryByStaff(staff);
+    }
+
+    // --- 5. GET SALARY HISTORY BY STAFF ID (For Admin/Manager) ---
+    public List<SalaryHistoryResponse> getSalaryHistoryByStaffId(String staffId) {
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return getSalaryHistoryByStaff(staff);
+    }
+
+    // Helper method to get salary history
+    private List<SalaryHistoryResponse> getSalaryHistoryByStaff(Staff staff) {
+        List<SalaryHistory> historyList = salaryHistoryRepository.findByStaffOrderByChangedAtDesc(staff);
+        
+        return historyList.stream()
+                .map(history -> SalaryHistoryResponse.builder()
+                        .id(history.getId())
+                        .staffId(history.getStaff().getId())
+                        .employeeCode(history.getStaff().getEmployeeCode())
+                        .staffName(history.getStaff().getFullName())
+                        .oldSalary(history.getOldSalary())
+                        .newSalary(history.getNewSalary())
+                        .reason(history.getReason())
+                        .updatedBy(history.getUpdatedBy())
+                        .changedAt(history.getChangedAt())
+                        .build())
+                .toList();
+    }
+
+    // ==========================================================
+    // 👇 HÀM HELPER LẤY STAFF TỪ TOKEN (Y chang Customer)
+    // ==========================================================
+    private Staff getCurrentAuthenticatedStaff() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        // Với Staff, username trong Token chính là Mã Nhân Viên (employeeCode)
+        String employeeCode = authentication.getName();
+
+        return staffRepository.findByEmployeeCode(employeeCode)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    // Helper convert response (Bro nhớ bổ sung các field mới vào StaffResponse nhé)
+    private StaffResponse convertToResponse(Staff staff) {
+        StaffResponse response = modelMapper.map(staff, StaffResponse.class);
+
+        if (staff.getAccount() != null && staff.getAccount().getRole() != null) {
+            response.setRoleName(staff.getAccount().getRole().getName());
+            response.setRoleDescription(staff.getAccount().getRole().getDescription());
+        }
+
+        // Map thêm SĐT từ Account nếu Entity Staff không lưu SĐT riêng
+        if (staff.getAccount() != null) {
+            response.setPhoneNumber(staff.getAccount().getUsername()); // Hoặc field username lưu sđt
         }
 
         return response;
